@@ -1,7 +1,7 @@
 {
-  "name": "Fabricantes",
+  "name": "ziro_log",
   "version": "1.0.0",
-  "description": "App para fabricantes de roupa do Bom Retiro",
+  "description": "App para consulta de frete ziro",
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server --mode=development --open",
@@ -9,10 +9,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ziro-app/suppliers.git"
+    "url": "https://github.com/AhmadForhat/ziro_log"
   },
   "keywords": [],
-  "author": "Wermeson Rocha",
+  "author": "Ahmad Forhat",
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.7.7",
