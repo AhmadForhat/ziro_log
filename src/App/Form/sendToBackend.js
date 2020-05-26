@@ -77,7 +77,10 @@ const sendToBackend = state => () => {
 					sCdMaoPropria: "S",
 					nVlValorDeclarado: valor/100,
 					sCdAvisoRecebimento: "S"
-				}
+				},
+				headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                }
 			}
 			const configCEP = {
 				method: 'GET',
@@ -116,7 +119,7 @@ const sendToBackend = state => () => {
                 console.log(error)
 				if (error.response) console.log(error.response)
 				setLoad(false)
-				setError('Favor verificar os valores preenchidos')
+				setError('Sistema está fora do ar')
                 reject('Erro ao consutltar!')
             }
         }
