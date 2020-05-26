@@ -59,7 +59,7 @@ const sendToBackend = state => async () => {
 		}
 		const {comprimento, altura, largura} = dimensoes(pesoNumber)
 			const config = {
-				url: 'http://ws.correios.com.br/calculador/CalcPrecoPrazo.asmx/CalcPrecoPrazo',
+				url: 'https://ws.correios.com.br/calculador/CalcPrecoPrazo.asmx/CalcPrecoPrazo',
 				params: {
 					nCdEmpresa: " ",
 					sDsSenha: " ",
