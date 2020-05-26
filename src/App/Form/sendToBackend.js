@@ -1,11 +1,10 @@
 import axios from 'axios'
 import convert from 'xml-js'
 
-const sendToBackend = state => () => {
+const sendToBackend = state => async () => {
 	const { setCotacao, servico, logista, peso, valor, setPrazo, setEndereco,setError,setLoad } = state
 	setError(false)
 	setLoad(true)
-    return new Promise( async (resolve, reject) => {
 		const pesoNumber = peso.replace(',','.')
 		const numberServico = (servico) => {
 			if(servico === 'sedex') return '04014'
@@ -45,22 +44,21 @@ const sendToBackend = state => () => {
 			}else{
 				setError('Peso tem que ter valores positivos e menores que 13.45kg')
 				setLoad(false)
-				reject('Utilizar o peso correto')
+				return 'Utilizar o peso correto'
 			}
 		}
 		if(valor/100 <= 20 || valor/100 >=7501){
 			setError('Favor utilizar valores entre R$21,00 e R$7.500,00 reais')
 			setLoad(false)
-			reject('Utilizar valores corretos de moeda')
+			return 'Utilizar valores corretos de moeda'
 		}
 		if(!['sedex','pac','sedex12','sedex10','sedexHOJE'].includes(servico)){
 			setError('Favor utilizar os valores disponíveis nas opções')
 			setLoad(false)
-			reject('Valor não incluido no array')
+			return 'Valor não incluido no array'
 		}
 		const {comprimento, altura, largura} = dimensoes(pesoNumber)
 			const config = {
-				method: 'POST',
 				url: 'http://ws.correios.com.br/calculador/CalcPrecoPrazo.asmx/CalcPrecoPrazo',
 				params: {
 					nCdEmpresa: " ",
@@ -79,12 +77,17 @@ const sendToBackend = state => () => {
 					sCdAvisoRecebimento: "S"
 				},
 				headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
+					"Content-Type": "application/x-www-form-urlencoded",
+					'Accept': 'application/json'
                 }
 			}
 			const configCEP = {
 				method: 'GET',
-				url: `https://viacep.com.br/ws/${logista}/json/`
+				url: `https://viacep.com.br/ws/${logista}/json/`,
+				headers:{
+                    'Content-Type': 'application/x-www-form-urlencoded',
+					'Accept': 'application/json'
+				}
 			}
         try {
 				const request = await axios(config)
@@ -99,32 +102,30 @@ const sendToBackend = state => () => {
 					const {logradouro, localidade, uf} = requestVia.data
 					setEndereco(`${logradouro}-${localidade}/${uf}`)
 					setLoad(false)
-					resolve('Consulta feita com sucesso')
+					return 'consulta feita com sucesso'
 				}else{
 					setError('CEP não encontrado')
 					setLoad(false)
-					reject('CEP não encontrado')
+					return 'CEP não encontrado'
 				}
 			} catch (error) {
 				setError('CEP não encontrado')
 				setLoad(false)
-				reject('CEP não encontrado')
+				return 'CEP não encontrado'
 			}
         } catch (error) {
             if (error.customError){
 				setLoad(false)
-				reject(error)
+				return error
 			}
             else {
                 console.log(error)
 				if (error.response) console.log(error.response)
 				setLoad(false)
 				setError('Sistema está fora do ar')
-                reject('Erro ao consutltar!')
+                return 'Erro ao consutltar!'
             }
         }
-    })
-
 }
 
 export default sendToBackend
