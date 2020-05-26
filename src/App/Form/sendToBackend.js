@@ -53,7 +53,7 @@ const sendToBackend = state => async () => {
 		const {comprimento, altura, largura} = dimensoes(pesoNumber)
 			const config = {
 				method:'GET',
-				url: 'http://localhost:9000/.netlify/functions/consult',
+				url: 'https://zirocorreios.netlify.app/.netlify/functions/consult',
 				data:{
 					"servico":servico,
 					"cep":logista,
