@@ -60,7 +60,7 @@ const sendToBackend = state => () => {
 		}
 		const {comprimento, altura, largura} = dimensoes(pesoNumber)
 			const config = {
-				method: 'GET',
+				method: 'POST',
 				url: 'http://ws.correios.com.br/calculador/CalcPrecoPrazo.asmx/CalcPrecoPrazo',
 				params: {
 					nCdEmpresa: " ",
@@ -79,8 +79,6 @@ const sendToBackend = state => () => {
 					sCdAvisoRecebimento: "S"
 				},
 				headers: {
-					'access-control-allow-origin': '*',
-					'Access-Control-Allow-Headers': '*',
                     "Content-Type": "application/x-www-form-urlencoded"
                 }
 			}
