@@ -1160,7 +1160,7 @@
   dependencies:
     "@bit/vitorbarbosa19.ziro.icon" "1.0.13"
 
-"@bit/vitorbarbosa19.ziro.spinner@0.1.1":
+"@bit/vitorbarbosa19.ziro.spinner@0.1.1", "@bit/vitorbarbosa19.ziro.spinner@^0.1.1":
   version "0.1.1"
   resolved "https://node.bit.dev/vitorbarbosa19.ziro.spinner/-/vitorbarbosa19.ziro.spinner-0.1.1.tgz#c4a84b588ecf6fa6f84b63feb35f7f483e29091f"
   integrity sha1-xKhLWI7Pb6b4S2P+s19/SD4pCR8=

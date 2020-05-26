@@ -16,7 +16,7 @@ const form = () => {
 	const [valor, setValor] = useState('')
 	const [cotacao, setCotacao] = useState(false)
 	const [prazo, setPrazo] = useState(false)
-	const state = { cotacao, peso, servico, valor, prazo, setPeso, logista, setLogista, setCotacao, setServico, setPrazo }
+	const [load, setLoad] = useState(false)
     const block = [
             {
                 header: 'Cotação Gerada',
@@ -102,7 +102,12 @@ const form = () => {
 			click={sendToBackend(state)}
 			/>
 			</div>
-			{cotacao && 
+			{load &&
+				<div style={{marginTop:'35px', display:'flex', justifyContent:'center'}}>
+				<Spinner size="5.5rem"/>
+				</div>
+			}
+			{cotacao && !error && !load &&
 				<div style={{marginTop:'35px'}}>
 				<Details blocks={block} />
 				</div>
