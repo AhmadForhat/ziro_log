@@ -1,5 +1,4 @@
 import axios from 'axios'
-import convert from 'xml-js'
 
 const sendToBackend = state => async () => {
 	const { setCotacao, servico, logista, peso, valor, setPrazo, setEndereco,setError,setLoad } = state
@@ -52,33 +51,33 @@ const sendToBackend = state => async () => {
 		}
 		const {comprimento, altura, largura} = dimensoes(pesoNumber)
 			const config = {
-				method:'GET',
-				url: 'https://zirocorreios.netlify.app/.netlify/functions/consult',
+				method:'POST',
+				url: 'http://localhost:9000/.netlify/functions/consult',
 				data:{
-					"servico":servico,
-					"cep":logista,
-					"peso":pesoNumber,
-					"comprimento":comprimento,
-					"altura":altura,
-					"largura":largura,
-					"valor":String(valor/100)
+					'servico':servico,
+					'cep':logista,
+					'peso':pesoNumber,
+					'comprimento':comprimento,
+					'altura':altura,
+					'largura':largura,
+					'valor':String(valor/100)
 				},
 				headers: {
 					'Authorization': 'Basic YWhtYWQ6emlybzEyMzQ=',
-					'Origin': 'https://ziro.app'
-				},
+					'Content-Type': 'application/json',
+				}
 			}
 			const configCEP = {
 				method: 'GET',
 				url: `https://viacep.com.br/ws/${logista}/json/`,
 				headers:{
-                    'Content-Type': 'application/x-www-form-urlencoded',
-					'Accept': 'application/json'
+                    'Content-Type': 'application/json'
 				}
 			}
         try {
 				const request = await axios(config)
-				const {Valor, PrazoEntrega} = request.data.cServico
+				console.log(request.data.Servicos)
+				const {Valor, PrazoEntrega} = request.data.Servicos.cServico
 				setCotacao(`R$ ${Valor._text}`)
 				setPrazo(`${PrazoEntrega._text} dias`)
 			try {
