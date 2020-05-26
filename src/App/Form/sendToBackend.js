@@ -79,6 +79,8 @@ const sendToBackend = state => () => {
 					sCdAvisoRecebimento: "S"
 				},
 				headers: {
+					'access-control-allow-origin': '*',
+					'Access-Control-Allow-Headers': '*',
                     "Content-Type": "application/x-www-form-urlencoded"
                 }
 			}
