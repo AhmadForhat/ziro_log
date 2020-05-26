@@ -3,6 +3,7 @@ import currencyFormat from '@ziro/currency-format'
 import maskInput from '@ziro/mask-input'
 import sendToBackend from './sendToBackend'
 import InitialLoader from '@bit/vitorbarbosa19.ziro.initial-loader'
+import Spinner from '@bit/vitorbarbosa19.ziro.spinner';
 import FormInput from '@bit/vitorbarbosa19.ziro.form-input'
 import Details from '@bit/vitorbarbosa19.ziro.details';
 import Dropdown from '@bit/vitorbarbosa19.ziro.dropdown'
@@ -16,7 +17,10 @@ const form = () => {
 	const [valor, setValor] = useState('')
 	const [cotacao, setCotacao] = useState(false)
 	const [prazo, setPrazo] = useState(false)
+	const [endereco, setEndereco] = useState(false)
+	const [error, setError] = useState(false)
 	const [load, setLoad] = useState(false)
+	const state = { cotacao, peso, servico, valor, prazo,endereco, setPeso, logista, setLogista, setCotacao, setServico, setPrazo, setEndereco, setError, setLoad}
     const block = [
             {
                 header: 'Cotação Gerada',
@@ -31,7 +35,7 @@ const form = () => {
                     },
                     {
                         title: 'Local',
-                        content: 'Rua blá blá blá'
+                        content: endereco
                     }
                 ]
             }
@@ -40,14 +44,12 @@ const form = () => {
 		<>
 			<FormInput
 					name='cepLogista'
-					label='cepLogista'
+					label='cep'
 					input={
 						<InputText
 						value={logista}
-						onChange={({ target: { value } }) => {
-							return setLogista(value)
-						}}
-						placeholder='12345678'
+						onChange={({ target: { value } }) => setLogista(maskInput(value, '#####-###', true))}
+						placeholder='12345-678'
 					/>
 					}
 				/>
@@ -56,24 +58,25 @@ const form = () => {
 					label='valor'
 					input={
 						<InputText
-						value={valor}
+						value={currencyFormat(valor)}
 						onChange={({ target: { value } }) => {
-							return setValor(value)
+							const toInteger = parseInt(value.replace(/[R$\.,]/g, ''), 10)
+							return setValor(maskInput(toInteger, '######', true))
 						}}
-						placeholder='100,00'
+						placeholder='R$2.000,00'
 					/>
 					}
 				/>
 			<FormInput
 				name='peso'
-				label='Peso da mercadoria (g)'
+				label='Peso da mercadoria (Kg)'
 				input={
 					<InputText
 						value={peso}
 						onChange={({ target: { value } }) => {
-							return setPeso(value)
+							setPeso(value)
 						}}
-						placeholder='2000'
+						placeholder='2,32'
 					/>
 				}
 			/>
@@ -97,7 +100,7 @@ const form = () => {
 			<div style={{marginTop:'10px'}}>
 			<Button 
 			type="button"
-			cta="Cálcular"
+			cta="Calcular"
 			template="regular"
 			click={sendToBackend(state)}
 			/>
@@ -111,6 +114,9 @@ const form = () => {
 				<div style={{marginTop:'35px'}}>
 				<Details blocks={block} />
 				</div>
+			}
+			{error &&
+				<h2 style={{textAlign:'center', marginTop:'35px', color:'red'}}>{error}</h2>
 			}
 		</>
     )
