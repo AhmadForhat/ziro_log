@@ -6,13 +6,6 @@ const sendToBackend = state => async () => {
 	setError(false)
 	setLoad(true)
 		const pesoNumber = peso.replace(',','.')
-		const numberServico = (servico) => {
-			if(servico === 'sedex') return '04014'
-			if(servico === 'pac') return '04510'
-			if(servico === 'sedex12') return '04782'
-			if(servico === 'sedex10') return '04790'
-			if(servico === 'sedexHOJE') return '04804'
-		}
 		const dimensoes = (peso) => {
 			if(peso <= 1.850){
 				return {
@@ -59,27 +52,21 @@ const sendToBackend = state => async () => {
 		}
 		const {comprimento, altura, largura} = dimensoes(pesoNumber)
 			const config = {
-				url: 'https://ws.correios.com.br/calculador/CalcPrecoPrazo.asmx/CalcPrecoPrazo',
-				params: {
-					nCdEmpresa: " ",
-					sDsSenha: " ",
-					nCdServico: numberServico(servico),
-					sCepOrigem: '01123010',
-					sCepDestino: logista,
-					nVlPeso: pesoNumber,
-					nCdFormato: "1",
-					nVlComprimento: comprimento,
-					nVlAltura: altura,
-					nVlLargura: largura,
-					nVlDiametro: "2",
-					sCdMaoPropria: "S",
-					nVlValorDeclarado: valor/100,
-					sCdAvisoRecebimento: "S"
+				method:'GET',
+				url: 'http://localhost:9000/.netlify/functions/consult',
+				data:{
+					"servico":servico,
+					"cep":logista,
+					"peso":pesoNumber,
+					"comprimento":comprimento,
+					"altura":altura,
+					"largura":largura,
+					"valor":String(valor/100)
 				},
 				headers: {
-					"Content-Type": "application/x-www-form-urlencoded",
-					'Accept': 'application/json'
-                }
+					'Authorization': 'Basic YWhtYWQ6emlybzEyMzQ=',
+					'Origin': 'https://ziro.app'
+				},
 			}
 			const configCEP = {
 				method: 'GET',
@@ -91,9 +78,7 @@ const sendToBackend = state => async () => {
 			}
         try {
 				const request = await axios(config)
-				const convertido = convert.xml2json(request.data, { compact: true, spaces: 4 })
-				const obj = JSON.parse(convertido)
-				const {Valor, PrazoEntrega} = obj.cResultado.Servicos.cServico
+				const {Valor, PrazoEntrega} = request.data.cServico
 				setCotacao(`R$ ${Valor._text}`)
 				setPrazo(`${PrazoEntrega._text} dias`)
 			try {
