@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const sendToBackend = state => async () => {
-	const { setCotacao, servico, logista, peso, valor, setPrazo, setEndereco,setError,setLoad } = state
+	const { setCotacaoSedex, servico, logista, peso, valor, setPrazoSedex, setEndereco,setError,setLoad, setCotacaoPac, setPrazoPac, setSeguro } = state
 	setError(false)
 	setLoad(true)
 		const pesoNumber = peso.replace(',','.')
@@ -44,27 +44,24 @@ const sendToBackend = state => async () => {
 			setLoad(false)
 			return 'Utilizar valores corretos de moeda'
 		}
-		if(!['sedex','pac','sedex12','sedex10','sedexHOJE'].includes(servico)){
-			setError('Favor utilizar os valores disponíveis nas opções')
-			setLoad(false)
-			return 'Valor não incluido no array'
-		}
 		const {comprimento, altura, largura} = dimensoes(pesoNumber)
-			const config = {
-				method:'POST',
-				url: 'https://zirocorreios.netlify.app/.netlify/functions/consult',
-				data:{
-					'servico':servico,
-					'cep':logista,
-					'peso':pesoNumber,
-					'comprimento':comprimento,
-					'altura':altura,
-					'largura':largura,
-					'valor':String(valor/100)
-				},
-				headers: {
-					'Authorization': 'Basic YWhtYWQ6emlybzEyMzQ=',
-					'Content-Type': 'application/json',
+			const config = (servico) => {
+				return {
+					method:'POST',
+					url: 'https://zirocorreios.netlify.app/.netlify/functions/consult',
+					data:{
+						'servico':servico,
+						'cep':logista,
+						'peso':pesoNumber,
+						'comprimento':comprimento,
+						'altura':altura,
+						'largura':largura,
+						'valor':String(valor/100)
+					},
+					headers: {
+						'Authorization': 'Basic YWhtYWQ6emlybzEyMzQ=',
+						'Content-Type': 'application/json',
+					}
 				}
 			}
 			const configCEP = {
@@ -75,11 +72,14 @@ const sendToBackend = state => async () => {
 				}
 			}
         try {
-				const request = await axios(config)
-				console.log(request.data.Servicos)
-				const {Valor, PrazoEntrega} = request.data.Servicos.cServico
-				setCotacao(`R$ ${Valor._text}`)
-				setPrazo(`${PrazoEntrega._text} dias`)
+				const requestSedex = await axios(config('sedex'))
+				const requestPac = await axios(config('pac'))
+				console.log(requestSedex.data.Servicos)
+				console.log(requestPac.data.Servicos)
+				const {Valor:valorSedex, PrazoEntrega:prazoSedex, ValorValorDeclarado:declaroSedex} = requestSedex.data.Servicos.cServico
+				const {Valor:valorPac, PrazoEntrega:prazoPac, ValorValorDeclarado:declaroPac} = requestPac.data.Servicos.cServico
+				setCotacaoSedex({valorTotal:valorSedex._text, prazo:prazoSedex._text, valorSeguro: declaroSedex._text})
+				setCotacaoPac({valorTotal:valorPac._text, prazo:prazoPac._text, valorSeguro: declaroPac._text})
 			try {
 				const requestVia = await axios(configCEP)
 				if(!requestVia.data.erro){
