@@ -43,6 +43,8 @@ const form = () => {
 			setServico('')
 			setCotacaoPac('')
 			setCotacaoSedex('')
+			setAgencia('')
+			setValorComSeguro(true)
 		}
 	return (
 		<>
