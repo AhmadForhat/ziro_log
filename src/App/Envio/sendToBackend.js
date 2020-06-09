@@ -24,7 +24,8 @@ const sendToBackend = state => async () => {
         json: true
 	}
 	try {
-		await axios(config)
+		const result = await axios(config)
+		console.log(result)
 	} catch (error) {
 		console.log(error)
 	}
