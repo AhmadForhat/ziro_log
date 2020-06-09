@@ -2,21 +2,24 @@ import React, { useState, useContext } from 'react'
 import currencyFormat from '@ziro/currency-format'
 import maskInput from '@ziro/mask-input'
 import sendToBackend from './sendToBackend'
-import InitialLoader from '@bit/vitorbarbosa19.ziro.initial-loader'
 import Spinner from '@bit/vitorbarbosa19.ziro.spinner';
 import FormInput from '@bit/vitorbarbosa19.ziro.form-input'
 import Details from '@bit/vitorbarbosa19.ziro.details';
-import Dropdown from '@bit/vitorbarbosa19.ziro.dropdown'
 import InputText from '@bit/vitorbarbosa19.ziro.input-text'
 import Button from '@bit/vitorbarbosa19.ziro.button'
+import { useLocation } from 'wouter'
+import Envio from '../Envio'
+import { Menu } from '../Menu/index'
 
-const form = () => {
+const form = ( {envio} ) => {
     const [peso, setPeso] = useState('')
-    const [logista, setLogista] = useState('')
+    const [lojista, setLojista] = useState('')
 	const [servico, setServico] = useState('')
 	const [valor, setValor] = useState('')
 	const [agencia, setAgencia] = useState('')
+	const [precoFinal, setPrecoFinal] = useState('')
 	const [cotacaoSedex, setCotacaoSedex] = useState(false)
+	const [errorEnvio, setErrorEnvio] = useState(false)
 	const [valorComSeguro, setValorComSeguro] = useState(true)
 	const [prazoSedex, setPrazoSedex] = useState(false)
 	const [cotacaoPac, setCotacaoPac] = useState(false)
@@ -24,7 +27,8 @@ const form = () => {
 	const [endereco, setEndereco] = useState(false)
 	const [error, setError] = useState(false)
 	const [load, setLoad] = useState(false)
-	const state = {peso, servico, valor,endereco, setPeso, logista, setLogista, setCotacaoSedex, setServico, setPrazoSedex, setEndereco, setError, setLoad, setPrazoPac, setCotacaoPac}
+	const [, setLocation] = useLocation();
+	const state = {peso, servico, valor,endereco, agencia,precoFinal, valorComSeguro, setPeso, lojista, setLojista, setCotacaoSedex, setServico, setPrazoSedex, setEndereco, setError, setLoad, setPrazoPac, setCotacaoPac, lojista}
     const block = [
             {
                 header: 'Serviços Disponíveis',
@@ -37,7 +41,7 @@ const form = () => {
             }
 		]
 		const limpar = () => {
-			setLogista('')
+			setLojista('')
 			setValor('')
 			setPeso('')
 			setServico('')
@@ -46,15 +50,16 @@ const form = () => {
 			setAgencia('')
 			setValorComSeguro(true)
 		}
+	if(envio === 'envio') return <Envio formInfo = {state}/>
 	return (
-		<>
+		<Menu title='Relatórios'>
 			<FormInput
-					name='cepLogista'
+					name='cepLojista'
 					label='cep'
 					input={
 						<InputText
-						value={logista}
-						onChange={({ target: { value } }) => setLogista(maskInput(value, '#####-###', true))}
+						value={lojista}
+						onChange={({ target: { value } }) => setLojista(maskInput(value, '#####-###', true))}
 						placeholder='12345-678'
 					/>
 					}
@@ -92,7 +97,7 @@ const form = () => {
 					</div>
 				):(
 					<div style={{textAlign: 'center'}}>
-						{(logista || valor || peso ||servico || cotacaoPac || cotacaoSedex) && (
+						{(lojista || valor || peso ||servico || cotacaoPac || cotacaoSedex) && (
 							<div style={{marginBottom:'5%'}}><a onClick={() => limpar()}>Limpar</a></div>
 							)
 						}
@@ -116,13 +121,18 @@ const form = () => {
 							setAgencia({
 								servico:'sedex',
 								valor:cotacaoSedex,
-								prazo:prazoSedex
+								prazo:cotacaoSedex.prazo
 							})
 							}}/>
 						<div style={{display:'flex', justifyContent:'space-between', flexDirection:'column', width:'85%'}}>
 						<div style ={{display:'flex', justifyContent:'space-between'}}><p >Prazo</p> <p>{`${cotacaoSedex.prazo} dias`}</p></div>
+						{valorComSeguro && (
+						<>
 						<div style ={{display:'flex', justifyContent:'space-between'}}><p>Seguro</p> <p>{`R$ ${cotacaoSedex.valorSeguro}`}</p></div>
-						<div style ={{display:'flex', justifyContent:'space-between'}}><p>Valor Total</p> <p>{`R$ ${cotacaoSedex.valorTotal}`}</p></div>
+						<div style ={{display:'flex', justifyContent:'space-between'}}><p>Envio</p> <p>{`R$ ${cotacaoSedex.valorSem}`}</p></div>
+						</>
+						)}
+						<div style ={{display:'flex', justifyContent:'space-between'}}><p>{valorComSeguro ? 'Valor Total' : 'Valor Sem Seguro'}</p> <p>{`R$ ${valorComSeguro ? cotacaoSedex.valorTotal : cotacaoSedex.valorSem}`}</p></div>
 						</div>
 					</div>
 					<label>Pac</label>
@@ -132,13 +142,18 @@ const form = () => {
 							setAgencia({
 								servico:'pac',
 								valor:cotacaoPac,
-								prazo:prazoPac
+								prazo:catacaoPac.prazo
 							})
 							}}/>
 						<div style={{display:'flex', justifyContent:'space-between', flexDirection:'column', width:'85%'}}>
 						<div style ={{display:'flex', justifyContent:'space-between'}}><p >Prazo</p> <p>{`${cotacaoPac.prazo} dias`}</p></div>
-						<div style ={{display:'flex', justifyContent:'space-between'}}><p>Seguro</p> <p>{`R$ ${cotacaoPac.valorSeguro}`}</p></div>
-						<div style ={{display:'flex', justifyContent:'space-between'}}><p>Valor Total</p> <p>{`R$ ${cotacaoPac.valorTotal}`}</p></div>
+						{valorComSeguro && (
+							<>
+							<div style ={{display:'flex', justifyContent:'space-between'}}><p>Seguro</p> <p>{`R$ ${cotacaoPac.valorSeguro}`}</p></div>
+							<div style ={{display:'flex', justifyContent:'space-between'}}><p>Envio</p> <p>{`R$ ${cotacaoPac.valorSem}`}</p></div>
+							</>
+						)}
+						<div style ={{display:'flex', justifyContent:'space-between'}}><p>{valorComSeguro ? 'Valor Total' : 'Valor Sem Seguro'}</p> <p>{`R$ ${valorComSeguro ? cotacaoPac.valorTotal : cotacaoPac.valorSem}`}</p></div>
 						</div>
 					</div>
 					<div style={{display:'flex', justifyContent: 'space-between', marginTop:'6%'}}>
@@ -157,14 +172,24 @@ const form = () => {
 				</form>
 
 				<div style={{marginTop:'10%'}}>
-					<Button type="link" cta="Solicitar Envio" navigate={() => null} />
+					<Button type="link" cta="Solicitar Envio" navigate={() => {
+						if(agencia === ''){
+							setErrorEnvio(true)
+						}else{
+							setPrecoFinal(`R$ ${valorComSeguro ? cotacaoPac.valorTotal : cotacaoPac.valorSem}`)
+							setLocation('/envio')
+						}
+					}} />
 				</div>
+				{errorEnvio &&
+						<h2 style={{textAlign:'center', marginTop:'35px', color:'red'}}>Favor selecione todos os campos!</h2>
+				}
 				</div>
 			}
 			{error &&
 				<h2 style={{textAlign:'center', marginTop:'35px', color:'red'}}>{error}</h2>
 			}
-		</>
+		</Menu>
 	)
 }
 
