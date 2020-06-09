@@ -17,13 +17,14 @@ const sendToBackend = state => async () => {
             'valueInputOption': 'user_entered'
         },
         headers: {
+            'Origin': 'https://ziro.app',
             'Content-type': 'application/json',
             'Authorization': process.env.SHEET_TOKEN,
         },
         json: true
 	}
 	try {
-		const requisicao = await axios(config)
+		await axios(config)
 	} catch (error) {
 		console.log(error)
 	}
