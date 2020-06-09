@@ -81,8 +81,6 @@ const sendToBackend = state => async () => {
         try {
 				const requestSedex = await axios(config('sedex'))
 				const requestPac = await axios(config('pac'))
-				console.log(requestSedex.data.Servicos)
-				console.log(requestPac.data.Servicos)
 				const {Valor:valorSedex, PrazoEntrega:prazoSedex, ValorValorDeclarado:declaroSedex, ValorSemAdicionais:semAdicionarSedex} = requestSedex.data.Servicos.cServico
 				const {Valor:valorPac, PrazoEntrega:prazoPac, ValorValorDeclarado:declaroPac, ValorSemAdicionais:semAdicionarPac} = requestPac.data.Servicos.cServico
 				setCotacaoSedex({valorTotal:valorSedex._text, prazo:prazoSedex._text, valorSeguro: declaroSedex._text, valorSem:semAdicionarSedex._text})
