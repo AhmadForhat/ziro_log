@@ -1,57 +1,64 @@
 import axios from 'axios'
 
 const sendToBackend = state => async () => {
-	const { setCotacaoSedex, servico, logista, peso, valor, setPrazoSedex, setEndereco,setError,setLoad, setCotacaoPac, setPrazoPac, setSeguro } = state
+	const { setCotacaoSedex, servico, lojista, peso, valor, setPrazoSedex, setEndereco,setError,setLoad, setCotacaoPac, setPrazoPac, setSeguro } = state
 	setError(false)
 	setLoad(true)
 		const pesoNumber = peso.replace(',','.')
 		const dimensoes = (peso) => {
-			if(peso <= 1.850){
-				return {
-					comprimento:'20',
-					largura: '20',
-					altura: '20'
+			if(Number(peso)){
+				if(peso <= 1.850 && peso >= 0){
+					return {
+						comprimento:'20',
+						largura: '20',
+						altura: '20'
+					}
 				}
-			}
-			if(peso <= 3.750){
-				return {
-					comprimento:'25',
-					largura: '25',
-					altura: '35'
+				if(peso <= 3.750){
+					return {
+						comprimento:'25',
+						largura: '25',
+						altura: '35'
+					}
 				}
-			}
-			if(peso <= 7.550){
-				return{
-					comprimento:'30',
-					largura: '30',
-					altura: '40',
+				if(peso <= 7.550){
+					return{
+						comprimento:'30',
+						largura: '30',
+						altura: '40',
+					}
 				}
-			}
-			if(peso <= 13.450){
-				return {
-					comprimento:'40',
-					largura: '40',
-					altura: '50',
+				if(peso <= 13.450){
+					return {
+						comprimento:'40',
+						largura: '40',
+						altura: '50',
+					}
+				}else{
+					return 'Utilizar o peso correto'
 				}
 			}else{
-				setError('Peso tem que ter valores positivos e menores que 13.45kg')
-				setLoad(false)
-				return 'Utilizar o peso correto'
+				return 'Número invalido'
 			}
 		}
-		if(valor/100 <= 20 || valor/100 >=7501){
+		if(valor/100 <= 20 || valor/100 >=7501 && valor !== ''){
 			setError('Favor utilizar valores entre R$21,00 e R$7.500,00 reais')
 			setLoad(false)
 			return 'Utilizar valores corretos de moeda'
 		}
 		const {comprimento, altura, largura} = dimensoes(pesoNumber)
+		if(!comprimento){
+			setLoad(false)
+			setError('Peso tem que ter valores positivos e menores que 13.45kg')
+			return 'Utilizar o peso correto'
+		}
 			const config = (servico) => {
 				return {
 					method:'POST',
 					url: 'https://zirocorreios.netlify.app/.netlify/functions/consult',
 					data:{
 						'servico':servico,
-						'cep':logista,
+						'cep':lojista,
 						'peso':pesoNumber,
 						'comprimento':comprimento,
 						'altura':altura,
@@ -59,14 +66,14 @@ const sendToBackend = state => async () => {
 						'valor':String(valor/100)
 					},
 					headers: {
-						'Authorization': 'Basic YWhtYWQ6emlybzEyMzQ=',
+						'Authorization': process.env.ZIRO_CORREIOS_TOKEN,
 						'Content-Type': 'application/json',
 					}
 				}
 			}
 			const configCEP = {
 				method: 'GET',
-				url: `https://viacep.com.br/ws/${logista}/json/`,
+				url: `https://viacep.com.br/ws/${lojista}/json/`,
 				headers:{
                     'Content-Type': 'application/json'
 				}
@@ -76,10 +83,10 @@ const sendToBackend = state => async () => {
 				const requestPac = await axios(config('pac'))
 				console.log(requestSedex.data.Servicos)
 				console.log(requestPac.data.Servicos)
-				const {Valor:valorSedex, PrazoEntrega:prazoSedex, ValorValorDeclarado:declaroSedex} = requestSedex.data.Servicos.cServico
-				const {Valor:valorPac, PrazoEntrega:prazoPac, ValorValorDeclarado:declaroPac} = requestPac.data.Servicos.cServico
-				setCotacaoSedex({valorTotal:valorSedex._text, prazo:prazoSedex._text, valorSeguro: declaroSedex._text})
-				setCotacaoPac({valorTotal:valorPac._text, prazo:prazoPac._text, valorSeguro: declaroPac._text})
+				const {Valor:valorSedex, PrazoEntrega:prazoSedex, ValorValorDeclarado:declaroSedex, ValorSemAdicionais:semAdicionarSedex} = requestSedex.data.Servicos.cServico
+				const {Valor:valorPac, PrazoEntrega:prazoPac, ValorValorDeclarado:declaroPac, ValorSemAdicionais:semAdicionarPac} = requestPac.data.Servicos.cServico
+				setCotacaoSedex({valorTotal:valorSedex._text, prazo:prazoSedex._text, valorSeguro: declaroSedex._text, valorSem:semAdicionarSedex._text})
+				setCotacaoPac({valorTotal:valorPac._text, prazo:prazoPac._text, valorSeguro: declaroPac._text, valorSem: semAdicionarPac._text})
 			try {
 				const requestVia = await axios(configCEP)
 				if(!requestVia.data.erro){
