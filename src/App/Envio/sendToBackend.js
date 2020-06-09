@@ -17,7 +17,6 @@ const sendToBackend = state => async () => {
             'valueInputOption': 'user_entered'
         },
         headers: {
-            'Origin': 'https://ziro.app',
             'Content-type': 'application/json',
             'Authorization': process.env.SHEET_TOKEN,
         },
