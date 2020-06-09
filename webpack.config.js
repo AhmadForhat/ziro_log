@@ -29,46 +29,20 @@ module.exports = (env, { mode }) => {
 	}
 	if (mode === 'development') {
 		const {
+			ziro_correios_token,
 			sheet_url,
-			sheet_token,
 			sheet_id,
-			sheet_suppliers_id,
-			continue_url,
-			cnpj_url,
-			cnpj_token,
-			zoop_token,
-			zoop_url_sellers,
-			zoop_url_token_bank,
-			zoop_url_bank_associate,
-			zoop_url_upload_file,
-			sheet_id_charge,
-			seller_id_ziro,
-			zoop_url_boleto,
-			user_email,
-			pdw_email
+			sheet_token
 		} = require('./credentials')
 		config.devtool = 'cheap-module-eval-source-map'
 		config.devServer = { historyApiFallback: true }
 		config.plugins.push(
 			new webpack.DefinePlugin({
 				'process.env': {
+					ZIRO_CORREIOS_TOKEN: JSON.stringify(ziro_correios_token),
 					SHEET_URL: JSON.stringify(sheet_url),
-					SHEET_TOKEN: JSON.stringify(sheet_token),
 					SHEET_ID: JSON.stringify(sheet_id),
-					CONTINUE_URL: JSON.stringify(continue_url),
-					CNPJ_URL: JSON.stringify(cnpj_url),
-					CNPJ_TOKEN: JSON.stringify(cnpj_token),
-					SHEET_SUPPLIERS_ID: JSON.stringify(sheet_suppliers_id),
-					ZOOP_TOKEN: JSON.stringify(zoop_token),
-					ZOOP_URL_SELLERS: JSON.stringify(zoop_url_sellers),
-					ZOOP_URL_TOKEN_BANK: JSON.stringify(zoop_url_token_bank),
-					ZOOP_URL_BANK_ASSOCIATE: JSON.stringify(zoop_url_bank_associate),
-					ZOOP_URL_UPLOAD_FILE: JSON.stringify(zoop_url_upload_file),
-					SHEET_ID_CHARGE: JSON.stringify(sheet_id_charge),
-					SELLER_ID_ZIRO: JSON.stringify(seller_id_ziro),
-					ZOOP_URL_BOLETO: JSON.stringify(zoop_url_boleto),
-					USER_EMAIL: JSON.stringify(user_email),
-					PDW_EMAIL: JSON.stringify(pdw_email),
+					SHEET_TOKEN: JSON.stringify(sheet_token)
 				}
 			})
 		)
@@ -92,23 +66,10 @@ module.exports = (env, { mode }) => {
 			}),
 			new webpack.DefinePlugin({
 				'process.env': {
+					ZIRO_CORREIOS_TOKEN: JSON.stringify(process.env.ZIRO_CORREIOS_TOKEN),
 					SHEET_URL: JSON.stringify(process.env.SHEET_URL),
-					SHEET_TOKEN: JSON.stringify(process.env.SHEET_TOKEN),
 					SHEET_ID: JSON.stringify(process.env.SHEET_ID),
-					CONTINUE_URL: JSON.stringify(process.env.CONTINUE_URL),
-					CNPJ_URL: JSON.stringify(process.env.CNPJ_URL),
-					CNPJ_TOKEN: JSON.stringify(process.env.CNPJ_TOKEN),
-					SHEET_SUPPLIERS_ID: JSON.stringify(process.env.SHEET_SUPPLIERS_ID),
-					ZOOP_TOKEN: JSON.stringify(process.env.ZOOP_TOKEN),
-					ZOOP_URL_SELLERS: JSON.stringify(process.env.ZOOP_URL_SELLERS),
-					ZOOP_URL_TOKEN_BANK: JSON.stringify(process.env.ZOOP_URL_TOKEN_BANK),
-					ZOOP_URL_BANK_ASSOCIATE: JSON.stringify(process.env.ZOOP_URL_BANK_ASSOCIATE),
-					ZOOP_URL_UPLOAD_FILE: JSON.stringify(process.env.ZOOP_URL_UPLOAD_FILE),
-					SHEET_ID_CHARGE: JSON.stringify(process.env.SHEET_ID_CHARGE),
-					SELLER_ID_ZIRO: JSON.stringify(process.env.SHEET_ID_CHARGE),
-					ZOOP_URL_BOLETO: JSON.stringify(process.env.ZOOP_URL_BOLETO),
-					USER_EMAIL: JSON.stringify(process.env.USER_EMAIL),
-					PDW_EMAIL: JSON.stringify(process.env.PDW_EMAIL),
+					SHEET_TOKEN: JSON.stringify(process.env.SHEET_TOKEN)
 				}
 			})
 		)
