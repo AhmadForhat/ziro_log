@@ -142,7 +142,7 @@ const form = ( {envio} ) => {
 							setAgencia({
 								servico:'pac',
 								valor:cotacaoPac,
-								prazo:catacaoPac.prazo
+								prazo:cotacaoPac.prazo
 							})
 							}}/>
 						<div style={{display:'flex', justifyContent:'space-between', flexDirection:'column', width:'85%'}}>
@@ -170,8 +170,8 @@ const form = ( {envio} ) => {
 							}}/>
 					</div>
 				</form>
-
-				<div style={{marginTop:'10%'}}>
+				
+				{/* <div style={{marginTop:'10%'}}>
 					<Button type="link" cta="Solicitar Envio" navigate={() => {
 						if(agencia === ''){
 							setErrorEnvio(true)
@@ -180,7 +180,7 @@ const form = ( {envio} ) => {
 							setLocation('/envio')
 						}
 					}} />
-				</div>
+				</div> */}
 				{errorEnvio &&
 						<h2 style={{textAlign:'center', marginTop:'35px', color:'red'}}>Favor selecione todos os campos!</h2>
 				}
