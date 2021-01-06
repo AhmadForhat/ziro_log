@@ -68,7 +68,7 @@
     "@ziro/mask-input": "^1.0.0",
     "@ziro/router": "^3.0.0",
     "@ziro/theme": "^1.0.3",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "firebase": "^7.6.1",
     "framer-motion": "^1.10.3",
     "prop-types": "^15.7.2",
